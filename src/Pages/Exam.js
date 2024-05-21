@@ -9,40 +9,14 @@ const Exam = ({ questions }) => {
     const [isFullscreen, setIsFullscreen] = useState(false);
     const [userData, setUserData] = useState({});
 
-    const captureAndResizeScreenshot = () => {
-        const element = document.getElementById('screenshotTarget');
-    
-        html2canvas(element).then((canvas) => {
-          // Resize the canvas
-          const resizedCanvas = document.createElement('canvas');
-          const context = resizedCanvas.getContext('2d');
-          const scaleFactor = 0.5; // Scale down by 50%
-          
-          resizedCanvas.width = canvas.width * scaleFactor;
-          resizedCanvas.height = canvas.height * scaleFactor;
-    
-          context.drawImage(canvas, 0, 0, resizedCanvas.width, resizedCanvas.height);
-    
-          // Convert resized canvas to a JPEG image with compression
-          resizedCanvas.toBlob((blob) => {
-            const imgUrl = URL.createObjectURL(blob);
-    
-            // Optional: Download the resized and compressed image
-            const link = document.createElement('a');
-            link.href = imgUrl;
-            link.download = 'screenshot.jpg';
-            link.click();
-    
-            // Alternatively, you can send the blob to the backend here
-            // Example: uploadScreenshot(blob);
-          }, 'image/jpeg', 0.7); // 70% quality
-        });
-
     const captureScreenshot = async ({reason}) => {
         const element = document.getElementById('screenshotTarget'); // Element to capture
     
         html2canvas(element).then(async (canvas) => {
           const imgData = canvas.toDataURL('image/png');
+          
+            // store the image data in a variable or send it to the server
+            console.log(imgData);
             const data = { studentID: "1", screenshot: imgData, event: reason };
             await axios.post('http://localhost:8000/event', data).then(() => {
                 console.log('Screenshot captured and sent to server');

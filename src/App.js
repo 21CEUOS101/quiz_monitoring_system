@@ -1,69 +1,82 @@
-/*
- * @file App.js
- * @author Ashish H. Prajapati (prajapatiashish40567@gmail.com)
- * @brief Main file for the application to handle routing and context API 
- * 
- * @details This file is the main file for the application. It handles the routing and context API for the application.
- *          It also checks if the user is logged in or not and then renders the components accordingly.
- *          If the user is not logged in, it will redirect the user to the login page.
- *
- * @version 0.1
- * @date 14th March 2024
- *
- * @history 14th March 2021 Finalized the file for version 0.1
- */
-
-import {
-  BrowserRouter as Router,
-  Routes,
-  Route,
-} from "react-router-dom";
-import "./styles/globals.css";
 import { createContext, useEffect, useState } from "react";
+import Auth from "./Custom_Components/Auth";
+import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
+import "./styles/globals.css";
+import { Login } from "./Custom_Components/Login";
+import { auth } from "./config/firebase";
+import Home from "./Custom_Components/Home";
+import Sidebar from "./Custom_Components/SideBar";
+import Quizzes from "./Pages/Quizzes";
+import Students from "./Pages/Students";
+import QuestionList from "./Custom_Components/QuestionList";
+import Exam from "./Pages/Exam";
+import ScreenCaptureComponent from "./Custom_Components/ScreenCaptureComponent";
 
 
-// context API to check if the user is logged in or not
-// export const AppContext = createContext();
+export const AppContext = createContext();
 
-// // function to check if the user is logged in or not
-// const checkLogin = async () => {
+export default function App() {
+  const [isLoggedIn, setIsLoggedIn] = useState(false);
+  const [user, setUser] = useState();
+  console.log(auth?.currentUser);
 
-//   const username = localStorage.getItem("email") || null;
-//   const password = localStorage.getItem("password") || null;
+  useEffect(() => {
+    const unsubscribe = auth.onAuthStateChanged((user) => {
+      setUser(user);
+      if (user) {
+        setIsLoggedIn(true);
+      } else {
+        setIsLoggedIn(false);
+      }
+    });
 
-//   let response = { success: false };
+    return () => {
+      unsubscribe();
+    };
+  }, []);
 
-//   if (username!==null && password!==null) {
-//     response = await Login_F({ username, password }).then((response) => {
-//       return response;
-//     });
-//   }
-
-//   return response;
-// };
-
-function App() {
-  // to check if the user is logged in or not
-  // const [isLoggedIn, setIsLoggedIn] = useState(false);
-
-  // useEffect(() => {
-  //   checkLogin().then((response) => {
-  //     if (response?.success)
-  //       setIsLoggedIn(true);
-  //     else
-  //       setIsLoggedIn(false);
-  //   });
-  // }, []);
+  const questions = [
+    {
+      question: "What is the capital of France?",
+      options: ["Paris", "Lyon", "Marseille", "Toulouse"],
+      answer: "Paris",
+    },
+    {
+      question: "What is the capital of Spain?",
+      options: ["Madrid", "Barcelona", "Valencia", "Seville"],
+      answer: "Madrid",
+    },
+    {
+      question: "What is the capital of Germany?",
+      options: ["Berlin", "Hamburg", "Munich", "Cologne"],
+      answer: "Berlin",
+    },
+    {
+      question: "What is the capital of Italy?",
+      options: ["Rome", "Milan", "Naples", "Turin"],
+      answer: "Rome",
+    },
+  ];
 
   return (
-    // <AppContext.Provider value={{ isLoggedIn, setIsLoggedIn }}>
-      <Router>
-          <Routes>
-            <Route path="/" element={<div className=" bg-black text-red-600">Home</div>} />
-          </Routes>
-      </Router>
-    // </AppContext.Provider>
+    <AppContext.Provider value={{ isLoggedIn, setIsLoggedIn, user, setUser }}>
+      <div className="flex h-screen">
+        <Router>
+          <div className="flex flex-col lg:flex-row w-full min-h-screen">
+            {window.location.pathname !== "/exams" && <Sidebar />}
+            <div className="flex-1 p-6 bg-gray-100 overflow-auto">
+              <Routes>
+                <Route path="/dashboard" element={<Home user={{ type: "student" }} />} />
+                <Route path="/quizzes" element={<Quizzes user={{ type: "teacher" }} />} />
+                <Route path="/students" element={<Students user={{ type: "teacher" }} />} />
+                <Route path="/register" element={<Auth />} />
+                <Route path="/login" element={<Login />} />
+                <Route path="/exams" element={<Exam questions={questions} />} />
+              </Routes>
+            </div>
+          </div>
+        </Router>
+      </div>
+    </AppContext.Provider>
   );
 }
-
-export default App;

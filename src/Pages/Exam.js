@@ -3,28 +3,28 @@ import WebcamMonitor from '../Custom_Components/WebcamMonitor';
 import QuestionList from "../Custom_Components/QuestionList";
 import axios from 'axios';
 import html2canvas from 'html2canvas';
-  
+
 const Exam = ({ questions }) => {
     const [quizStarted, setQuizStarted] = useState(false);
     const [isFullscreen, setIsFullscreen] = useState(false);
     const [userData, setUserData] = useState({});
 
-    const captureScreenshot = async ({reason}) => {
+    const captureScreenshot = async ({ reason }) => {
         const element = document.getElementById('screenshotTarget'); // Element to capture
-    
+
         html2canvas(element).then(async (canvas) => {
-          const imgData = canvas.toDataURL('image/png');
-          
+            const imgData = canvas.toDataURL('image/png');
+
             // store the image data in a variable or send it to the server
             console.log(imgData);
-            const data = { studentID: "1", screenshot: imgData, event: reason };
+            const data = { studentID: "6tbxgjt0o", screenshot: imgData, event: reason };
             await axios.post('http://localhost:8000/event', data).then(() => {
                 console.log('Screenshot captured and sent to server');
             }).catch((error) => {
                 console.error('Error capturing and sending screenshot:', error);
             });
         });
-      };
+    };
 
     useEffect(() => {
         if (quizStarted) {
@@ -35,7 +35,7 @@ const Exam = ({ questions }) => {
             const handleBlockedKeys = (event) => {
                 if (blockedKeys.includes(event.key) || (event.ctrlKey && (event.key === 'c' || event.key === 'v'))) {
                     event.preventDefault();
-                    captureScreenshot({reason: 'Blocked key pressed'});
+                    captureScreenshot({ reason: 'Blocked key pressed' });
                     alert('This action is not allowed.');
                 }
             }
@@ -43,7 +43,7 @@ const Exam = ({ questions }) => {
 
             const handleVisibilityChange = () => {
                 if (document.hidden) {
-                    captureScreenshot({reason: 'Tab switched or browser minimized'});
+                    captureScreenshot({ reason: 'Tab switched or browser minimized' });
                     alert('You have switched tabs or minimized the browser. This will be reported.');
                 }
             };
@@ -59,11 +59,18 @@ const Exam = ({ questions }) => {
             document.addEventListener('fullscreenchange', handleFullscreenChange);
 
             const handleDevToolsChange = () => {
-                captureScreenshot({reason: 'DevTools opened'});
+                captureScreenshot({ reason: 'DevTools opened' });
                 alert('DevTools detected! Please refrain from opening DevTools during the quiz.');
                 // Optionally, you can take further action such as disabling the quiz or logging the event.
             };
             window.addEventListener('devtoolschange', handleDevToolsChange);
+
+            // Adding keypress event listener to capture screenshot
+            const handleKeyPress = (event) => {
+                captureScreenshot({ reason: 'Key pressed' });
+                alert('A key has been pressed. This action will be reported.');
+            };
+            document.addEventListener('keypress', handleKeyPress);
 
             return () => {
                 document.removeEventListener('contextmenu', handleContextMenu);
@@ -71,23 +78,24 @@ const Exam = ({ questions }) => {
                 document.removeEventListener('visibilitychange', handleVisibilityChange);
                 document.removeEventListener('fullscreenchange', handleFullscreenChange);
                 window.removeEventListener('devtoolschange', handleDevToolsChange);
+                document.removeEventListener('keypress', handleKeyPress);
             };
         }
-    });
+    }, [quizStarted]);
 
     const enterFullscreen = () => {
         const elem = document.documentElement;
         elem.requestFullscreen?.() ||
-        elem.mozRequestFullScreen?.() ||
-        elem.webkitRequestFullscreen?.() ||
-        elem.msRequestFullscreen?.();
+            elem.mozRequestFullScreen?.() ||
+            elem.webkitRequestFullscreen?.() ||
+            elem.msRequestFullscreen?.();
     };
 
     const exitFullscreen = () => {
         document.exitFullscreen?.() ||
-        document.mozCancelFullScreen?.() ||
-        document.webkitExitFullscreen?.() ||
-        document.msExitFullscreen?.();
+            document.mozCancelFullScreen?.() ||
+            document.webkitExitFullscreen?.() ||
+            document.msExitFullscreen?.();
     };
 
     const generateRandomID = () => {
@@ -147,7 +155,7 @@ const Exam = ({ questions }) => {
                 <>
                     <div className="quiz-content">
                         <div className="flex flex-col gap-4">
-                            <QuestionList questions={questions} handleSubmit={submitQuiz}/>
+                            <QuestionList questions={questions} handleSubmit={submitQuiz} />
                         </div>
                     </div>
                 </>

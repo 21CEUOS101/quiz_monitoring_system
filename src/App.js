@@ -10,6 +10,7 @@ import Quizzes from "./Pages/Quizzes";
 import Students from "./Pages/Students";
 import QuestionList from "./Custom_Components/QuestionList";
 import Exam from "./Pages/Exam";
+import ExamRegister from "./Pages/ExamRegister";
 import ScreenCaptureComponent from "./Custom_Components/ScreenCaptureComponent";
 
 
@@ -69,6 +70,7 @@ export default function App() {
                 <Route path="/quizzes" element={<Quizzes user={{ type: "teacher" }} />} />
                 <Route path="/students" element={<Students user={{ type: "teacher" }} />} />
                 <Route path="/register" element={<Auth />} />
+                <Route path="/enterExam" element={<ExamRegister />} />
                 <Route path="/login" element={<Login />} />
                 <Route path="/exams" element={<Exam questions={questions} />} />
               </Routes>

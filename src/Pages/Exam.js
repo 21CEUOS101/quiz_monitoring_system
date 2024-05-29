@@ -3,7 +3,7 @@ import Swal from 'sweetalert2';
 import WebcamMonitor from '../Custom_Components/WebcamMonitor';
 import QuestionList from "../Custom_Components/QuestionList";
 import axios from 'axios';
-const { captureScreenshot, fetchAndStoreIP, enterFullscreen, exitFullscreen } = require('../utils/index');
+const { captureScreenshot, enterFullscreen, exitFullscreen } = require('../utils/index');
 
 const Exam = ({ questions }) => {
     const [quizStarted, setQuizStarted] = useState(false);
@@ -79,6 +79,13 @@ const Exam = ({ questions }) => {
             };
         }
     }, [mediaRecorder]);
+
+    useEffect(() => {
+        if (window.api && quizStarted) {
+            window.api.disableClipboard();
+            window.api.disablePrint();
+        }
+    }, [quizStarted]);
     
 
     useEffect(() => {
@@ -95,7 +102,6 @@ const Exam = ({ questions }) => {
             const handleVisibilityChange = () => {
                 if (document.hidden) {
                     handleCaptureScreenshot({ reason: 'Tab switched or browser minimized' });
-                    Swal.fire('You have switched tabs or minimized the browser. This will be reported.');
                 }
             };
             const handleFullscreenChange = () => {
@@ -123,11 +129,11 @@ const Exam = ({ questions }) => {
             };
         }
     }, [quizStarted, screenshotInterval, mediaRecorder]);
-
+    
     // Start the quiz
     const startQuiz = () => {
         setQuizStarted(true);
-        fetchAndStoreIP();
+        // fetchAndStoreIP();
         enterFullscreen();
     };
 

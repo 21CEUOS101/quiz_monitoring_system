@@ -16,7 +16,7 @@ const Sidebar = () => {
   return (
     <div className="h-screen bg-gray-900 text-white w-64 shadow-lg">
       <div className="p-6">
-        <h1 className="text-2xl font-bold mb-8">Quiz Monitoring System</h1>
+        <Link to={"/test"} className="text-2xl font-bold mb-8">Quiz Monitoring System</Link>
       </div>
       <nav className="mt-10">
         <ul>

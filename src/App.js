@@ -12,6 +12,7 @@ import QuestionList from "./Custom_Components/QuestionList";
 import Exam from "./Pages/Exam";
 import ExamRegister from "./Pages/ExamRegister";
 import ScreenCaptureComponent from "./Custom_Components/ScreenCaptureComponent";
+import StudentView from "./Pages/StudentView";
 
 
 export const AppContext = createContext();
@@ -63,9 +64,10 @@ export default function App() {
       <div className="flex h-screen">
         <Router>
           <div className="flex flex-col lg:flex-row w-full min-h-screen">
-            {window.location.pathname !== "/exams" && <Sidebar />}
+            {!["/exams", "/"].includes(window.location.pathname) && <Sidebar />}
             <div className="flex-1 p-6 bg-gray-100 overflow-auto">
               <Routes>
+                <Route path="/" element={<StudentView/>} />
                 <Route path="/dashboard" element={<Home user={{ type: "student" }} />} />
                 <Route path="/quizzes" element={<Quizzes user={{ type: "teacher" }} />} />
                 <Route path="/students" element={<Students user={{ type: "teacher" }} />} />

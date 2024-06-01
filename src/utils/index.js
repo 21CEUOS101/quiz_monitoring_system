@@ -67,3 +67,55 @@ export const fetchAndStoreIP = () => {
             console.error('Error fetching and storing data:', error);
         });
 };
+
+// Function to shuffle questions and options in a quiz
+export const shuffleQuestions = (questions) => {
+    const shuffledQuestions = [...questions].sort(() => Math.random() - 0.5);
+    shuffledQuestions.forEach(question => {
+        question.options.sort(() => Math.random() - 0.5);
+    });
+    return shuffledQuestions;
+};
+
+// Function to validate a quiz
+export const validateQuiz = (questions, answers) => {
+    let score = 0;
+    questions.forEach((question, index) => {
+        if (question.answer === answers[index]) {
+            score++;
+        }
+    });
+    return score;
+};
+
+// Function to start a timer
+export const startTimer = (duration, onTick, onTimeout) => {
+    let timeLeft = duration;
+    const timer = setInterval(() => {
+        timeLeft--;
+        if (timeLeft <= 0) {
+            clearInterval(timer);
+            onTimeout();
+        } else {
+            onTick(timeLeft);
+        }
+    }, 1000);
+    return timer;
+};
+
+// what is onTick and onTimeout?
+// onTick is a function that will be called every second to update the timer display.
+
+// How should I use above function startTimer?
+// You can use it like this:
+// const timer = startTimer(60, setTimeLeft, handleTimeout);
+// where setTimeLeft is a function to update the timer display and handleTimeout is a function to handle the timer timeout.
+
+// do timer automatically stops after 60 seconds?
+// Yes, the timer will automatically stop after 60 seconds.
+
+// If Student submits the quiz before 60 seconds, how to stop the timer?
+// You can clear the timer using clearInterval(timer) when the student submits the quiz.
+
+// But clearInterval(timer) will stop the timer , how to get timer value?
+// You can store the timer value in a state variable and use it to clear the timer when needed.
